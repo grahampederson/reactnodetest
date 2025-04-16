@@ -18,7 +18,7 @@ const meetingHistory = new mongoose.Schema({
     createBy: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "User",
-        require: true,
+        require: true, // Shouldn't this be 'required'?
     },
     timestamp: {
         type: Date,

@@ -42,19 +42,60 @@ const AddMeeting = (props) => {
     const formik = useFormik({
         initialValues: initialValues,
         validationSchema: MeetingSchema,
-        onSubmit: (values, { resetForm }) => {
-            
+        onSubmit: async (values, { resetForm }) => {
+            await AddData();
         },
     });
     const { errors, touched, values, handleBlur, handleChange, handleSubmit, setFieldValue } = formik
 
     const AddData = async () => {
-
+        try {
+            setIsLoding(true);            
+            const user = JSON.parse(localStorage.getItem('user'));
+            
+            const meetingData = {
+                ...values,
+                createBy: user?._id
+            };
+            
+            const response = await postApi('api/meeting/add', meetingData);
+            if (response.status === 200) {
+                toast.success('Meeting created successfully');
+                formik.resetForm();
+                onClose();
+                if (setAction) setAction(prev => !prev);
+                if (fetchData) fetchData();
+            }
+        } catch (error) {
+            console.error('Error creating meeting:', error);
+            toast.error('Failed to create meeting');
+        } finally {
+            setIsLoding(false);
+        }
     };
 
     const fetchAllData = async () => {
-        
-    }
+        try {
+            setIsLoding(true);            
+            if (values.related === "Contact") {
+                const contactResponse = await getApi('api/contact');
+                if (contactResponse.status === 200) {
+                    setContactData(contactResponse.data);
+                }
+            }
+            if (values.related === "Lead") {
+                const leadResponse = await getApi('api/lead');
+                if (leadResponse.status === 200) {
+                    setLeadData(leadResponse.data);
+                }
+            }
+        } catch (error) {
+            console.error('Error fetching data:', error);
+            toast.error('Failed to fetch data');
+        } finally {
+            setIsLoding(false);
+        }
+    };
 
     useEffect(() => {
 
