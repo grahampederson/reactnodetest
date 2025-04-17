@@ -72,9 +72,16 @@ const Index = () => {
         },
         { Header: "Date & Time", accessor: "dateTime", },
         { Header: "Time Stamp", accessor: "timestamp", },
-        { Header: "Create By", accessor: "createdByName", },
+        { 
+            Header: "Create By", 
+            accessor: "createByName",
+            cell: (cell) => (
+                <>
+                    {cell?.value || ' - '}
+                </>
+            )
+        },
         ...(permission?.update || permission?.view || permission?.delete ? [actionHeader] : [])
-
     ];
 
     const fetchData = async () => {
